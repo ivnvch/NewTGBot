@@ -79,110 +79,61 @@ async Task HandleUpdateAsync(ITelegramBotClient telegramBot, Update update, Canc
 
 }
 
+async Task OutputKeyboard(ITelegramBotClient telegramBot, CallbackQuery callbackQuery)
+{
+    List<InlineKeyboardButton[]> buttons = new List<InlineKeyboardButton[]>();
+    foreach (var item in sectionService.Gets())
+    {
+        buttons.Add(new[] { InlineKeyboardButton.WithCallbackData(text: item.Name, callbackData: item.Name) });
+    }
+    InlineKeyboardMarkup keyboardMarkup = new(buttons.ToArray());
+    await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите секцию: ", replyMarkup: keyboardMarkup);
+}
+
 async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callbackQuery)
 {
-    List <int> count = new List<int>();
-    int value = 0;
     if (callbackQuery.Data.StartsWith("section"))
     {
-        List<InlineKeyboardButton[]> buttons = new List<InlineKeyboardButton[]>();
-        foreach (var item in sectionService.Gets())
-        {
-            buttons.Add(new[] { InlineKeyboardButton.WithCallbackData(item.Name, item.Name) });
-            value++;
-            count.Add(value);
-        }
-        InlineKeyboardMarkup keyboardMarkup = new(buttons.ToArray());
-        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите секцию: ", replyMarkup: keyboardMarkup);
+        OutputKeyboard(botClient, callbackQuery);
 
     }
-    if (callbackQuery.Data.StartsWith("Настольный теннис"))
+    if (callbackQuery.Data.StartsWith(callbackQuery.Data))
     {
 
-        foreach (var item in teacherBy.Gets())
+        foreach (var item in teacherBy.Gets(callbackQuery.Data))
         {
-            if ("Шашки и шахматы" == item.SectionName)
-            {
                 await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Название секции: {item.SectionName}" + Environment.NewLine +
               $"Расписание {item.SectionRunningTime}" + Environment.NewLine +
               $"Местоположение: {item.SectionLocation}" + Environment.NewLine +
+              $"" + Environment.NewLine +
               $"ФИО преподавателя: {item.TeacherFullName}" + Environment.NewLine +
               $"Номер телефона: {item.TeacherMobilePhone}");
-                return;
-            }
-
-        }
-    }
-    else if (callbackQuery.Data.StartsWith("Каратэ"))
-    {
-        //await GetData(botClient, callbackQuery.Message.Chat.Id, sectionService.DTO(result));
-        //InlineKeyboardMarkup inline = 
-        //await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"{}")
-        foreach (var item in teacherBy.Gets())
-        {
-            if ("Шашки и шахматы" == item.SectionName)
+                
+            InlineKeyboardMarkup markup = new(new[]
             {
-                await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Название секции: {item.SectionName}" + Environment.NewLine +
-              $"Расписание {item.SectionRunningTime}" + Environment.NewLine +
-              $"Местоположение: {item.SectionLocation}" + Environment.NewLine +
-              $"ФИО преподавателя: {item.TeacherFullName}" + Environment.NewLine +
-              $"Номер телефона: {item.TeacherMobilePhone}");
-                return;
-            }
+           new[]{ InlineKeyboardButton.WithCallbackData(text: "Получить информацию о новой секции:", callbackData: "newSection")}
+           });
 
+            await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Нажмите на кнопку:", replyMarkup: markup);
+            return;
         }
     }
-    else if(callbackQuery.Data.StartsWith("Шашки и шахматы"))
+    if (callbackQuery.Data.StartsWith("newSection"))
     {
-        foreach (var item in teacherBy.Gets())
-        {
-            if ("Шашки и шахматы" == item.SectionName)
-            {
-                await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Название секции: {item.SectionName}" + Environment.NewLine +
-              $"Расписание {item.SectionRunningTime}" + Environment.NewLine +
-              $"Местоположение: {item.SectionLocation}" + Environment.NewLine +
-              $"ФИО преподавателя: {item.TeacherFullName}" + Environment.NewLine +
-              $"Номер телефона: {item.TeacherMobilePhone}");
-                return;
-            }
-
-        }
+        OutputKeyboard(botClient, callbackQuery);
     }
-    else if(callbackQuery.Data.StartsWith("Водное поло"))
-    {
-        foreach (var item in teacherBy.Gets())
-        {
-            if ("Шашки и шахматы" == item.SectionName)
-            {
-                await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Название секции: {item.SectionName}" + Environment.NewLine +
-              $"Расписание {item.SectionRunningTime}" + Environment.NewLine +
-              $"Местоположение: {item.SectionLocation}" + Environment.NewLine +
-              $"ФИО преподавателя: {item.TeacherFullName}" + Environment.NewLine +
-              $"Номер телефона: {item.TeacherMobilePhone}");
-                return;
-            }
+} 
+    //if (!string.IsNullOrEmpty(callbackQuery.Data))
+    //{
+    //    InlineKeyboardMarkup markup = new(new[]
+    //   {
+    //       new[]{ InlineKeyboardButton.WithCallbackData(text: "Получить информацию о новой секции:", callbackData: "newSection")}
+    //    });
 
-        }
-    }
-    else if (callbackQuery.Data.StartsWith("Общая Физическая Подготовка"))
-    {
-
-        foreach (var item in teacherBy.Gets())
-        {
-            if ("Шашки и шахматы" == item.SectionName)
-            {
-                await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Название секции: {item.SectionName}" + Environment.NewLine +
-              $"Расписание {item.SectionRunningTime}" + Environment.NewLine +
-              $"Местоположение: {item.SectionLocation}" + Environment.NewLine +
-              $"ФИО преподавателя: {item.TeacherFullName}" + Environment.NewLine +
-              $"Номер телефона: {item.TeacherMobilePhone}");
-                return;
-            }
-
-        }
-    }
-
-}
+    //    await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Нажмите на кнопку:", replyMarkup: markup);
+    //    return;
+    //}
+//}
 
 //async Task GetData(ITelegramBotClient botClient, long id, SectionDTO sectionDTO)
 //{
@@ -194,19 +145,12 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
 
 async Task HandleMessage(ITelegramBotClient botClient, Message message)
 {
-    ReplyKeyboardMarkup mark = new(new[]
+    if (message.Text != "")
     {
-                    new KeyboardButton[]{"/start"}
-    });
-
-    InlineKeyboardMarkup markup = new(new[]
-    {
-           new[]{ InlineKeyboardButton.WithCallbackData("Секции ПолесГУ", "section")
-           }
-    });
-
-    if (message.Text == "/start")
-    {
+        InlineKeyboardMarkup markup = new(new[]
+        {
+           new[]{ InlineKeyboardButton.WithCallbackData("Секции ПолесГУ", "section")}
+        });
 
         await botClient.SendTextMessageAsync(message.Chat.Id, "Нажмите на кнопку:", replyMarkup: markup);
         return;

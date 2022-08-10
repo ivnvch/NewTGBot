@@ -12,16 +12,16 @@ namespace TGBot.BusinessLogic.Implementations
             _context = context;
         }
 
-        public IEnumerable<TeacherBySection> Gets()
+        public IEnumerable<TeacherBySection> Gets(string name)
         {
-            _context.Database.ExecuteSqlRaw(@"CREATE VIEW View_TeacherBySection AS
+            _context.Database.ExecuteSqlRaw(@"ALTER VIEW View_TeacherBySection AS
                 SELECT s.Name AS SectionName, s.Location AS SectionLocation, s.RunningTime AS SectionRunningTime,
                 t.FullName AS TeacherFullName, t.MobilePhone AS TeacherMobilePhone 
                 FROM Sections s
                 JOIN Teachers t ON s.Id = t.SectionId");
             _context.SaveChanges();
 
-            return _context._TeacherBySections.AsNoTracking().ToList();
+            return _context._TeacherBySections.Where(x=> x.SectionName == name).ToList();
             
         }
     }

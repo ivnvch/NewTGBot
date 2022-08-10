@@ -4,14 +4,14 @@ namespace TGBot.Models
 {
     public class DataContext: DbContext
     {
-        public DataContext()
-        {
-        }
-
         //public DataContext()
         //{
-        //    Database.EnsureCreated();
         //}
+
+        public DataContext()
+        {
+            Database.EnsureCreated();
+        }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
