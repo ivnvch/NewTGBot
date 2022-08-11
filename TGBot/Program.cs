@@ -10,7 +10,6 @@ using TGBot.Models;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using TGBot.Common.Mapper;
 
 static void ConfigurationBuild(IConfigurationBuilder builder)
 {
@@ -103,7 +102,7 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
         foreach (var item in teacherBy.Gets(callbackQuery.Data))
         {
                 await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Название секции: {item.SectionName}" + Environment.NewLine +
-              $"Расписание {item.SectionRunningTime}" + Environment.NewLine +
+              $"Расписание: {item.SectionRunningTime}" + Environment.NewLine +
               $"Местоположение: {item.SectionLocation}" + Environment.NewLine +
               $"" + Environment.NewLine +
               $"ФИО преподавателя: {item.TeacherFullName}" + Environment.NewLine +
